@@ -2,6 +2,7 @@ const circleRadius = 200;
 const pi = 3.14159265359;
 let svg;
 let container;
+let budget;
 
 let values = {
   default: {
@@ -9,15 +10,15 @@ let values = {
     color: "#333333",
   },
   pleasure: {
-    percentage: 25,
+    percentage: 12,
     color: "#33658A",
   },
   work: {
-    percentage: 12.5,
+    percentage: 10,
     color: "#55DDE0",
   },
   pancakes: {
-    percentage: 25,
+    percentage: 35,
     color: "#F26419",
   },
 };
@@ -67,6 +68,7 @@ class Circle {
 
 document.addEventListener("DOMContentLoaded", () => {
   container = document.querySelector("#donut");
+  budget = document.querySelector("#budget");
 
   container.style.width = `${circleRadius}px`;
   container.style.height = `${circleRadius}px`;
@@ -76,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function drawChart(container) {
   if (svg) svg.remove();
-
   svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   let circles = createCircles(values);
 
@@ -99,6 +100,13 @@ function updateValues(key, value) {
   newValues[key].percentage = +value;
 
   values = newValues;
+
+  let sum = Object.entries(newValues)
+    .filter(([key, _]) => key !== "default")
+    .map(([_, value]) => value.percentage)
+    .reduce((sum, a) => sum + a, 0);
+
+  budget.innerText = `${sum}%`;
 
   drawChart(container);
 }
