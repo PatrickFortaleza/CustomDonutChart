@@ -1,32 +1,26 @@
 const circleRadius = 200;
 const pi = 3.14159265359;
-const values = [
-  {
+let svg;
+let container;
+
+let values = {
+  default: {
+    percentage: 100,
+    color: "#333333",
+  },
+  pleasure: {
     percentage: 25,
-    label: "Percentage 1",
     color: "#33658A",
   },
-  {
+  work: {
     percentage: 12.5,
-    label: "Percentage 1",
-    color: "#F6AE2D",
-  },
-  {
-    percentage: 12.5,
-    label: "Percentage 1",
     color: "#55DDE0",
   },
-  {
+  pancakes: {
     percentage: 25,
-    label: "Percentage 1",
     color: "#F26419",
   },
-  {
-    percentage: 25,
-    label: "Percentage 1",
-    color: "#FF1B1C",
-  },
-];
+};
 
 class Circle {
   constructor(radius, percentage) {
@@ -72,27 +66,52 @@ class Circle {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  let container = document.querySelector("#donut");
-  let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  container = document.querySelector("#donut");
 
   container.style.width = `${circleRadius}px`;
   container.style.height = `${circleRadius}px`;
 
+  drawChart(container);
+});
+
+function drawChart(container) {
+  if (svg) svg.remove();
+
+  svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   let circles = createCircles(values);
 
   circles.forEach((circle) => svg.appendChild(circle.svg));
   container.appendChild(svg);
 
   setTimeout(() => circles.forEach((circle) => circle.setDashArray()), 1000);
-});
+
+  let inputs = document.querySelectorAll(".chart-input");
+
+  inputs.forEach((input) =>
+    input.addEventListener("change", (e) =>
+      updateValues(e.target.id, e.target.value)
+    )
+  );
+}
+
+function updateValues(key, value) {
+  let newValues = { ...values };
+  newValues[key].percentage = +value;
+
+  values = newValues;
+
+  drawChart(container);
+}
 
 function createCircles(values) {
-  let circles = values.map((value, index) => {
+  let v = Object.values(values);
+
+  let circles = v.map((value, index) => {
     let circle = new Circle(circleRadius, value.percentage);
 
     let transformValue = 0;
     for (let i = 0; i < index; i++) {
-      transformValue = transformValue + (values[i].percentage * 360) / 100;
+      transformValue = transformValue + (v[i].percentage * 360) / 100;
     }
     transformValue = transformValue - 90;
 
